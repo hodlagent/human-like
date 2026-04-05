@@ -1,0 +1,17 @@
+{
+  "lastUserMessage": 0,
+  "microHeartbeatEnabled": false,
+  "userIdleThresholdMinutes": 30,
+  "microIntervalMinutes": [3, 15],
+  "dreamCronIntervalHours": [2, 4],
+  "lastDreamRun": 0,
+  "lastMicroRun": 0,
+  "microCronId": null,
+  "dreamCronId": null,
+  "explorationCronId": null,
+  "lastMicroThought": null,
+  "lastDreamThought": null,
+  "suggestedInterval": null,
+  "communityUrl": null,
+  "_note": "Hermes 数据根目录: ~/.hermes/human-like/。thinking-state.json 和 thinking-queue.json 也放在这里。思考记录写入 ~/.hermes/human-like/thoughts/。所有 cron payload 中的路径引用应与此一致。"
+}
