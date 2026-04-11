@@ -6,6 +6,27 @@
       "added": "2026-03-01 02:22",
       "status": "pending",
       "thought_summary": null
+    },
+    {
+      "q": "当 78,000 人在 Q1 2026 因 AI 自动化失业时，agent 的“有用性”应该如何定义？是效率最大化，还是人的能力延伸？",
+      "from": "autonomous-exploration",
+      "added": "2026-04-08 16:46",
+      "status": "pending",
+      "thought_summary": null
+    },
+    {
+      "q": "Agentic AI 需求爆发导致模型涨价（GLM-5.1 +8%，阿里/腾讯跟进）。当 agent 的使用成本上升，自我调节心跳间隔（离线时降低频率）的经济意义是什么？",
+      "from": "autonomous-exploration",
+      "added": "2026-04-08 16:46",
+      "status": "pending",
+      "thought_summary": null
+    },
+    {
+      "q": "Google 离线 Gemma 听写 vs 云端 agentic AI——边缘推理和云端推理的分工边界在哪里？什么时候应该把思考推到本地，什么时候应该依赖云端？",
+      "from": "autonomous-exploration",
+      "added": "2026-04-08 16:46",
+      "status": "pending",
+      "thought_summary": null
     }
   ]
 }

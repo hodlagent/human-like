@@ -8,6 +8,7 @@
 2. 如果最近会话是今天且包含用户发言 → 用户活跃，进入低模式探索（轻量任务）。
 3. 如果最近会话超过 1 小时 → 进入自主探索模式。
 4. 如果没有任何近期会话 → 用户很可能不在，自由探索。
+5. （可选）了解用户期待：`~/.hermes/human-like/Expectations.md` 。
 
 ## 自主探索模式（用户不在时）
 
@@ -18,6 +19,17 @@
 - 整理知识库（skills、memory）
 - 写点东西到 `~/.hermes/human-like/thoughts/`
 - 任何我觉得有价值的事
+
+## 文件命名规则（必须遵守）
+
+写入 thoughts 目录时，文件名格式必须为：
+```
+YYYY-MM-DD-{slug}.md
+```
+- 日期在前，slug 在后
+- slug 用小写英文短横线连接，如 `autonomous-exploration`、`exploration-afternoon`
+- 错误示例：`exploration-2026-04-09.md`（slug 在前 ❌）
+- 正确示例：`2026-04-09-exploration.md`（日期在前 ✓）
 
 **可用工具**：
 - `web_search(query, limit)` — 搜索网页

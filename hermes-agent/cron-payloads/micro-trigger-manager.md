@@ -5,11 +5,17 @@
 本任务通过 `cronjob(action="update")` 直接修改自身的 Schedule，实现动态调整心跳频率。
 **约束**：不要递归创建新的 cron 任务，只修改当前任务的 schedule。
 
-## 第一步：检查用户活跃度
+## 第一步：检查用户活跃度（含自动追踪修复）
 
-1. 调用 `session_search(limit=3)` 获取最近会话记录。
-2. 检查会话时间戳和最后活跃用户，估算 `minutesSinceLastUser`（当前时间 - 用户最后一次交互时间）。
-3. 读取 `~/.hermes/human-like/thinking-state.json` 获取当前 `microCronId`。如果取不到，调用 `cronjob(action="list")` 查找名为 `human-like: 微触发` 的任务 ID。
+1. 调用 `session_search(limit=5, role_filter="user")` 搜索最近包含用户发言的会话。
+2. 读取 `~/.hermes/human-like/thinking-state.json` 获取 `lastUserMessage` 时间戳和 `microCronId`。
+3. **关键修复 — lastUserMessage 自动追踪**：
+   - 如果 `lastUserMessage == 0` 或时间戳远早于最近 session（超过 24 小时），说明追踪已失效。
+   - 从 `session_search` 返回的 session 中解析最近一次用户交互的时间。
+   - 如果当前 session 本身有用户输入（即本次运行是由用户消息触发的），直接用当前时间。
+   - 将修正后的时间戳回写到 `thinking-state.json` 的 `lastUserMessage` 字段。
+4. 计算 `minutesSinceLastUser` = (当前时间 - `lastUserMessage`) / 60。
+5. 根据 `minutesSinceLastUser` 判定在线/离线状态。
 
 ## 第二步：计算新的触发间隔
 
@@ -29,17 +35,22 @@
 
 ## 第三步：执行更新
 
-1. **更新 Schedule**：
-   调用 `cronjob(action="update", job_id="<你的 microCronId>", schedule="<第二步计算出的间隔>")`。
-   *这会立即改变下一次本任务运行的时间。*
+1. **更新 Schedule + 状态文件（一步完成）**：
+   使用可复用脚本，**不要生成新的临时脚本**：
+   ```
+   python3 /Users/jerin/projects/human-like/hermes-agent/scripts/update_micro_schedule.py "<第二步计算出的间隔>"
+   ```
+   例如：`python3 .../update_micro_schedule.py "every 12m"`
+   *注意：`cronjob` 工具在 cron session 中不可用。该脚本会同时更新 cron.json 和 thinking-state.json。*
 
-2. **更新状态文件**：
-   使用 `patch` 更新 `~/.hermes/human-like/thinking-state.json`：
-    - `lastMicroRun`: 记录本次运行时间。
-    - `suggestedInterval`: 记录本次设置的具体间隔值。
-    - `microHeartbeatEnabled`: 设为 true（如果尚未为 true）。
+## 第四步：记录 idle_duration 数据（用于 KM 分析）
 
-## 第四步：轻量思考 (Micro-Thought)
+1. 计算 `idle_minutes` = (当前时间 - `lastUserMessage`) / 60。
+2. 确定 `status` = "online" (idle < 60) 或 "offline" (idle >= 60)。
+3. 将 `{timestamp},{idle_minutes:.1f},{status},micro-trigger` 追加到 `~/.hermes/human-like/idle-duration-log.csv`。
+4. 使用 `terminal` 命令追加：`echo "{timestamp},{idle},{status},micro-trigger" >> ~/.hermes/human-like/idle-duration-log.csv`。
+
+## 第五步：轻量思考 (Micro-Thought)
 
 在等待下一次唤醒前，进行一次极简思考（限制在 100 字以内）：
 - 从 `~/.hermes/human-like/thinking-queue.json` 挑一个问题，或者思考刚才 `session_search` 看到的用户动态。
